@@ -11,6 +11,7 @@ export default class GravitationalBody extends Phaser.Physics.Matter.Sprite {
         // // this.setOrigin(0, 0);
         this.setScale(this.radius*2 / 512);
         this.setCircle(this.radius);
+        this.setFriction(0);
         // this.setStatic(true);
         // // this.setGravity(10);
         // // this.setVelocity(Math.floor(Math.random() * 100), Math.floor(Math.random() * 100));
