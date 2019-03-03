@@ -39,12 +39,13 @@ class GameScene extends Phaser.Scene {
 
         // this.physics.add.collider(this.moons, this.moons, this.moonCollide, null, this);
 
-        // for (var i=0; i < 1000; i++) {
+        for (var i=0; i < 10; i++) {
 
-        //     var body = this.randomMoon();
+            var body = this.randomMoon();
 
-        //     this.moons.add(body);
-        // }
+            // this.moons.add(body);
+            this.matter.add.exisitingSprite(body);
+        }
 
         // var body1 = new GravitationalBody(this, 
         //     400, 
@@ -78,13 +79,16 @@ class GameScene extends Phaser.Scene {
 
         // this.physics.world.GRAVITATIONAL_CONST = 70;
 
-        var moon = new GravitationalBody(this.matter.world, 100, 100, 0, 0, 10000, 'moon');
+        this.moon1 = new GravitationalBody(this.matter.world, 100, 100, 0, 0, 10000, 'moon');
         // moon.setStatic(true);
-        this.matter.add.exisitingSprite(moon);
+        this.moon1.applyForce(new Phaser.Math.Vector2(0.01, 0));
+        this.matter.add.exisitingSprite(this.moon1);
 
-        var moon2 = new GravitationalBody(this.matter.world, 400, 400, 0, 0, 10000, 'moon');
+        this.moon2 = new GravitationalBody(this.matter.world, 400, 400, 0, 0, 10000, 'moon');
         // moon.setStatic(true);
-        this.matter.add.exisitingSprite(moon2);
+        this.matter.add.exisitingSprite(this.moon2);
+
+
 
         // var image = this.matter.add.gameObject(moon);
         // this.matter.add.sprite(100, 100, 'moon').setStatic(true).setScale(0.5);
@@ -98,8 +102,15 @@ class GameScene extends Phaser.Scene {
             0,//Math.floor(Math.random() * 200 - 100),
             0,//Math.floor(Math.random() * 200 - 100), 
             // Math.floor(Math.random() * 100), 
-            10000,
+            Math.random()* 5000,
             'moon'
+        );
+
+        moon.applyForce(
+            new Phaser.Math.Vector2(
+                Math.random() * 0.04 - 0.02,
+                Math.random() * 0.04 - 0.02,
+            )
         );
 
         console.log(moon);
@@ -108,7 +119,9 @@ class GameScene extends Phaser.Scene {
 
     update(time, delta) {
 
-        // console.log(`Update: ${time} ${delta}`); 
+        console.log(`Update: ${time} ${delta}`); 
+
+        console.log(this.moon1, this.moon2);
 
         // this.keys = {
         //     jump: {
