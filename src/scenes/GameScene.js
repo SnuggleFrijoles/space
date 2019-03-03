@@ -16,6 +16,11 @@ class GameScene extends Phaser.Scene {
         // this.load.spritesheet('spaceBlocks', 'asssets/images/spaceBlocks.png', {
         //     frameWidth: 32, frameHeight: 32
         // }); // 320 × 400
+
+        this.matter.add.exisitingSprite = function (sprite) {
+            this.sys.displayList.add(sprite);
+            this.sys.updateList.add(sprite);
+        }
     }
 
     create() {
@@ -73,9 +78,16 @@ class GameScene extends Phaser.Scene {
 
         // this.physics.world.GRAVITATIONAL_CONST = 70;
 
-        var moon = new GravitationalBody(this.matter.world, 100, 100, 0, 0, 512, 'moon');
-        var image = this.matter.add.gameObject(moon);
-        this.matter.add.sprite(100, 100, 'moon').setStatic(true);
+        var moon = new GravitationalBody(this.matter.world, 100, 100, 0, 0, 10000, 'moon');
+        // moon.setStatic(true);
+        this.matter.add.exisitingSprite(moon);
+
+        var moon2 = new GravitationalBody(this.matter.world, 400, 400, 0, 0, 10000, 'moon');
+        // moon.setStatic(true);
+        this.matter.add.exisitingSprite(moon2);
+
+        // var image = this.matter.add.gameObject(moon);
+        // this.matter.add.sprite(100, 100, 'moon').setStatic(true).setScale(0.5);
         // this.moons.add(moon);
     }
 
@@ -86,7 +98,7 @@ class GameScene extends Phaser.Scene {
             0,//Math.floor(Math.random() * 200 - 100),
             0,//Math.floor(Math.random() * 200 - 100), 
             // Math.floor(Math.random() * 100), 
-            512,
+            10000,
             'moon'
         );
 
@@ -129,8 +141,9 @@ class GameScene extends Phaser.Scene {
         else {
             if (time - this.pastTime > 5000) {
                 var body = this.randomMoon();
+                this.matter.add.exisitingSprite(body);
 
-                this.moons.add(body);
+                // this.moons.add(body);
                 this.pastTime = time;
                 console.log(this.moons);
             }
