@@ -1,7 +1,4 @@
-
-
 export default class GravitationalBody extends Phaser.Physics.Matter.Sprite {
-
     constructor(world, x, y, xVel, yVel, mass, key) {
 
         super(world, x, y, key);
