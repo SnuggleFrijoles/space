@@ -37,13 +37,26 @@ class GameScene extends Phaser.Scene {
             createMultipleCallback: null
         });
 
+        this.particles = this.add.group({
+            classType: GravitationalBody, //Phaser.GameObjects.Sprite,
+            defaultKey: null,
+            defaultFrame: null,
+            active: true,
+            maxSize: -1,
+            runChildUpdate: false,    // run gameObject.update() if true
+            createCallback: null,
+            removeCallback: null,
+            createMultipleCallback: null
+        });
+
         // this.physics.add.collider(this.moons, this.moons, this.moonCollide, null, this);
 
         for (var i=0; i < 100; i++) {
 
             var body = this.randomMoon();
 
-            this.moons.add(body);
+            // this.moons.add(body);
+            this.particles.add(body);
             this.matter.add.exisitingSprite(body);
         }
 
@@ -77,16 +90,16 @@ class GameScene extends Phaser.Scene {
         // );
         // this.moons.add(body3);
 
-        this.GRAVITATIONAL_CONST = 0.000010000000000;
+        this.GRAVITATIONAL_CONST = 0.001;
 
-        this.moon1 = new GravitationalBody(this.matter.world, 100, 100, 0, 0, 10000, 'moon');
-        this.moon1.setStatic(true);
-        this.moon1.applyForce(this.vect(0.01, 0));
+        this.moon1 = new GravitationalBody(this.matter.world, 200, 200, 0, 0, 10000, 'moon');
+        // this.moon1.setStatic(true);
+        // this.moon1.applyForce(this.vect(0.01, 0));
         this.matter.add.exisitingSprite(this.moon1);
         this.moons.add(this.moon1);
 
-        this.moon2 = new GravitationalBody(this.matter.world, 400, 400, 0, 0, 10000, 'moon');
-        this.moon2.setStatic(true);
+        this.moon2 = new GravitationalBody(this.matter.world, 600, 400, 0, 0, 10000, 'moon');
+        // this.moon2.setStatic(true);
         this.matter.add.exisitingSprite(this.moon2);
         this.moons.add(this.moon2);
 
@@ -116,8 +129,8 @@ class GameScene extends Phaser.Scene {
         var moon = new GravitationalBody(this.matter.world, 
             Math.floor(Math.random() * 800),
             Math.floor(Math.random() * 600), 
-            0,//Math.floor(Math.random() * 200 - 100),
-            0,//Math.floor(Math.random() * 200 - 100), 
+            this.randNeg(1),
+            this.randNeg(1),
             // Math.floor(Math.random() * 100), 
             Math.random()* 100 + 10,
             'moon'
@@ -175,11 +188,12 @@ class GameScene extends Phaser.Scene {
 
                 this.moons.add(body);
                 this.pastTime = time;
-                console.log(this.moons);
+                // console.log(this.moons);
             }
         }
 
         // console.log(this.moons);
+
 
         // Reset all moons accelerations
         for (var moon of this.moons.getChildren()) {
@@ -212,17 +226,13 @@ class GameScene extends Phaser.Scene {
 
                     var deltaSquared = deltaX**2 + deltaY**2;
                     var gForce = this.GRAVITATIONAL_CONST * moon1.mass * moon2.mass / deltaSquared;
-                    // var angle = Math.atan(Math.abs(deltaY / deltaX));
 
+                    // var angle = Math.atan(Math.abs(deltaY / deltaX));
                     // var gForceX = deltaXSign * Math.cos(angle) * gForce;
                     // var gForceY = deltaYSign * Math.sin(angle) * gForce;
 
-                    var gForceX = deltaXSign / Math.sqrt(1 + (deltaY / deltaX)**2) * gForce;
-                    var gForceY = deltaYSign / Math.sqrt(1 + (deltaY / deltaX)**2) * gForce;
-
-                    // Calculate gravitational force
-                    // var gForceX = deltaXSign * this.physics.world.GRAVITATIONAL_CONST * moon1.mass * moon2.mass / deltaX**2;
-                    // var gForceY = deltaYSign * this.physics.world.GRAVITATIONAL_CONST * moon1.mass * moon2.mass / deltaY**2;
+                    var gForceX = gForce * deltaX / Math.sqrt(deltaY**2 + deltaX**2);
+                    var gForceY = gForce * deltaY / Math.sqrt(deltaY**2 + deltaX**2);
 
                     var gForceXSign = gForceX / Math.abs(gForceX);
                     var gForceYSign = gForceY / Math.abs(gForceY);
@@ -238,6 +248,40 @@ class GameScene extends Phaser.Scene {
                     // );
                     
                 }
+            }
+        }
+
+        for (var particle of this.particles.getChildren()) {
+            particle.body.force.x = 0;
+            particle.body.force.y = 0;
+
+            for (var moon of this.moons.getChildren()) {
+                // Calculate distances
+                var deltaX = moon.body.position.x - particle.body.position.x;
+                var deltaY = moon.body.position.y - particle.body.position.y;
+
+                if (deltaX == 0 || deltaY == 0) {
+                    continue;
+                }
+
+                var deltaXSign = deltaX / Math.abs(deltaX);
+                var deltaYSign = deltaY / Math.abs(deltaY);
+
+                var deltaSquared = deltaX**2 + deltaY**2;
+                var gForce = this.GRAVITATIONAL_CONST * moon.mass * particle.mass / deltaSquared;
+
+                // var angle = Math.atan(Math.abs(deltaY / deltaX));
+                // var gForceX = deltaXSign * Math.cos(angle) * gForce;
+                // var gForceY = deltaYSign * Math.sin(angle) * gForce;
+
+                var gForceX = gForce * deltaX / Math.sqrt(deltaY**2 + deltaX**2);
+                var gForceY = gForce * deltaY / Math.sqrt(deltaY**2 + deltaX**2);
+
+                var gForceXSign = gForceX / Math.abs(gForceX);
+                var gForceYSign = gForceY / Math.abs(gForceY);
+
+                particle.body.force.x += gForceX / particle.mass;
+                particle.body.force.y += gForceY / particle.mass;
             }
         }
 
